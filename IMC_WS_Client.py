@@ -216,17 +216,15 @@ def login():
     username = raw_input("Enter the username:")
     password = raw_input('Enter the password:')
     client = Client(url)
-    client.service.login(username, password)
-    # for c in client.options.transport.cookiejar:
-    #     if "sess" in str(c).lower():
-    #         print "Session cookie:", c
+    client.service.login(username, password)  # 调用imcplatService服务下的login方法登录。
+    print client.options.transport.cookiejar
     return client.options.transport.cookiejar
 
 
 def logout():
     url = imcplatService
     client = Client(url)
-    client.service.logout()
+    client.service.logout()  # 调用imcplatService服务下的logout方法注销。
 
 
 def get_service_url():
@@ -320,11 +318,7 @@ def acm_user_service_query():
                              "userStartIp": ""  # 用户IP地址起始值 数据类型：字符串 约束条件：IPv4。当用户IP地址起始值和结束值同时有值时，起始值必须小于或等于结束值。#
                              }
     # print json.dumps(AcmUserListQueryParam, indent=4) #格式化字符串后输出
-    print client.service.queryAcmUserList(AcmUserListQueryParam)
-    '''req = str(client.last_sent())  # 保存请求报文，因为返回的是一个实例，所以要转换成str
-    response = str(client.last_received())  # 保存返回报文，返回的也是一个实例
-    print req
-    print response'''
+    print client.service.queryAcmUserList(AcmUserListQueryParam)  # 调用方法queryAcmUserList，传入参数，输出接入用户列表。
     logout()
 
 
@@ -335,15 +329,19 @@ class User(object):
 def plat_user_add():
     url = imcplatUserService
     client = Client(url)
-    print client
+    # print client # 打印方法名及参数类型
     client.set_options(port='imcplatUserServiceHttpSoap12Endpoint')
     client.set_options(headers=header)
-    print client.set_options(headers=header)
-    client.options.transport.cookiejar = login()
-    # print client.service.queryAllUserGroup()#查询所有的用户分组信息
-    print client.service.queryUserById(8824)
+    print client.set_options(headers=header)  # 设置header
+    client.options.transport.cookiejar = login()  # 调用login()函数返回的Cookie JSESSIONID，保持会话
+    # print client.service.queryAllUserGroup()# 查询所有的用户分组信息
+    # print client.service.queryUserById(8824)# 查询用户ID为8824的用户信息
     # AddUserParam = client.factory.create('ns2:User')  # 创建参数工厂模式
-    # print AddUserParam
+    # print AddUserParam # 打印工厂模式参数
+
+
+
+    # 平台用户增加参数构造
     AddUserParam = {"address": "11",
                     "certification": "222222222222222226",
                     "email": "",
@@ -359,23 +357,23 @@ def plat_user_add():
                     "userGroup": {"desc": "毕业班学生组", "id": 4, "name": "毕业班学生组"},
                     "userName": "IMCWS-TEST"
                     }
-    print client.service.addUser(AddUserParam)
+    print client.service.addUser(AddUserParam)  # 调用addUser方法增加平台用户，并返回结果。
 
 
 def add_acm_user():
     url = acmUserService
     client = Client(url)
-    print client
-    client.set_options(port='acmUserServiceHttpSoap12Endpoint')
+    # print client
+    client.set_options(port='acmUserServiceHttpSoap12Endpoint')  # soap报文端口设置
     client.set_options(headers=header)
     print client.set_options(headers=header)
-    client.options.transport.cookiejar = login()
+    client.options.transport.cookiejar = login()  # 调用login()函数返回的Cookie JSESSIONID，保持会话
     AddAcmUserParam = client.factory.create('ns0:AddAcmUserParam')  # 创建参数工厂模式
     print AddAcmUserParam
     # AcmServiceTemplateQueryParam = client.factory.create('ns8:AcmServiceTemplateQueryParam')
     # print AcmServiceTemplateQueryParam
-    AcmServiceTemplateQueryParam = {"resultSort": 0, "resultSortType": 1}
-    print client.service.queryServiceTemplateList(AcmServiceTemplateQueryParam)  # 查询服务列表
+    AcmServiceTemplateQueryParam = {"resultSort": 0, "resultSortType": 1}  # 接入服务模板参数构造
+    print client.service.queryServiceTemplateList(AcmServiceTemplateQueryParam)  # 查询服务模板列表
     AddUserParam = {"accountName": "",  # 帐号名 系统中唯一标识一个接入用户帐号。数据类型：字符串约束条件：最大长度为32个字符。
                     "boundDomain": "",  # 绑定域名称 数据类型：字符串 约束条件：最大长度为256个字符。
                     "computerName": "",  # 计算机名称 数据类型：字符串 约束条件：最大长度为256个字符。
@@ -414,7 +412,7 @@ def add_acm_user():
                     # 约束条件：满足正则表达式"([a-fA-F0-9]{2})((-|:)[a-fA-F0-9]{2}){0,5}"或"[a-fA-F0-9]{4}(-[a-fA-F0-9]{4}){0,2}"的字符串。
                     "userSsid": "",  # 用户SSID 数据类型：字符串 约束条件：最大长度为120个字符。
                     "userStartIp": "",  # 用户IP地址起始值 数据类型：字符串 约束条件：IPv4。当用户IP地址起始值和结束值同时有值时，起始值必须小于或等于结束值。#
-                    }
+                    }  # 增加接入用户参数构造
     # print json.dumps(AcmUserListQueryParam, indent=4)  # 格式化字符串后输出
     # print client.service.addUser(AddUserParam)
 
@@ -424,5 +422,5 @@ if __name__ == '__main__':
     # query_wsdl_service(get_service_url())
     # acm_user_service_query()
     # get_service_url()
-    plat_user_add()
-    # add_acm_user()
+    #plat_user_add()
+    add_acm_user()
